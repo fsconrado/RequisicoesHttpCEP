@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button botaoRecuperar;
     private TextView textoresultado;
+    private EditText editCep;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,15 +31,31 @@ public class MainActivity extends AppCompatActivity {
 
         botaoRecuperar = findViewById(R.id.buttonRecuperar);
         textoresultado = findViewById(R.id.textRecuperar);
+        editCep = findViewById(R.id.editCep);
 
 
         botaoRecuperar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MyTask task = new MyTask();
-                String urlApi = "https://blockchain.info/ticker";
-                String urlCep = "https://viacep.com.br/ws/01001000/json/";
-                task.execute(urlCep);
+                 //String urlApi = "https://blockchain.info/ticker";
+                // String moeda = "USD";
+                // String moeda = editCep.getText().toString();
+                //String urlApi = " https://blockchain.info/tobtc?currency="+moeda+"&value=500";
+                String cep = editCep.getText().toString();
+                if(!cep.isEmpty()){
+
+                    cep = cep.replaceAll("[^0-9]","");
+                    if(cep.length()==8){
+                        String urlCep = "https://viacep.com.br/ws/"+ cep + "/json/";
+                        task.execute(urlCep);
+                    }else{
+                        Toast.makeText(MainActivity.this, "formato CEP inválido", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "Preencher CEP", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -83,12 +102,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
+
             return buffer.toString();
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            textoresultado.setVisibility(View.VISIBLE);
             textoresultado.setText(s);
         }
     }
