@@ -29,13 +29,56 @@
         android:layout_height="wrap_content"
         android:text="Recuparar" />
 
-    <TextView
-        android:id="@+id/textRecuperar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Recuperar"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        tools:visibility="visible" />
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textLogradouro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="logradouro" />
+
+        <TextView
+            android:id="@+id/textComplemento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="complemento" />
+
+        <TextView
+            android:id="@+id/textCep"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="cep" />
+
+        <TextView
+            android:id="@+id/textBairro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="bairro" />
+
+        <TextView
+            android:id="@+id/textUf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="uf" />
+
+        <TextView
+            android:id="@+id/textlocalidade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="localidade" />
+
+        <TextView
+            android:id="@+id/textRecuperar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Recuperar"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+    </LinearLayout>
 
 </LinearLayout>
