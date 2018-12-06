@@ -1,17 +1,18 @@
 package com.requisicoes.cursoandroid.requisicoeshttpcep;
 
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.requisicoes.cursoandroid.requisicoeshttpcep.api.CEPService;
+import com.requisicoes.cursoandroid.requisicoeshttpcep.model.CEP;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +21,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.Buffer;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textoresultado;
     private EditText editCep;
     private TextView textlogradouro, textComplemento, textCep, textUF, textBairro, textLocalidade;
+    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +52,27 @@ public class MainActivity extends AppCompatActivity {
         textBairro = findViewById(R.id.textBairro);
         textLocalidade = findViewById(R.id.textlocalidade);
 
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://viacep.com.br/ws/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
 
         botaoRecuperar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MyTask task = new MyTask();
+
+                recuperarCepRetrofit();
+
+
+
+     /*           MyTask task = new MyTask();
                  //String urlApi = "https://blockchain.info/ticker";
-                // String moeda = "USD";
+                String moeda = "BRL";
                 // String moeda = editCep.getText().toString();
-                //String urlApi = " https://blockchain.info/tobtc?currency="+moeda+"&value=500";
-                String cep = editCep.getText().toString();
-                if(!cep.isEmpty()){
+                String urlApi = " https://blockchain.info/tobtc?currency="+moeda+"&value=500";
+               // String cep = editCep.getText().toString();
+                *//*if(!cep.isEmpty()){
 
                     cep = cep.replaceAll("[^0-9]","");
                     if(cep.length()==8){
@@ -66,12 +83,42 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     Toast.makeText(MainActivity.this, "Preencher CEP", Toast.LENGTH_SHORT).show();
-                }
+                }*//*
+
+                task.execute(urlApi);*/
+
 
             }
+
         });
 
-    }
+
+        }
+
+        private void recuperarCepRetrofit(){
+
+            CEPService cepService = retrofit.create(CEPService.class);
+            Call<CEP> call = cepService.recuperarCep();
+
+            call.enqueue(new Callback<CEP>() {
+                @Override
+                public void onResponse(Call<CEP> call, Response<CEP> response) {
+                    if(response.isSuccessful()){
+                        CEP cep = response.body();
+                        textoresultado.setVisibility(View.VISIBLE);
+                        textoresultado.setText(cep.getLocalidade()+" / "+cep.getBairro());
+
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<CEP> call, Throwable t) {
+
+                }
+            });
+
+        }
 
     class MyTask extends AsyncTask<String, Void, String>{
 
@@ -128,8 +175,11 @@ public class MainActivity extends AppCompatActivity {
             String bairro = null;
             String localidade = null;
             String uf = null;
+            Double valorMoeda = null;
+            String objetoValor = null;
+            String simbolo = null;
 
-            try {
+        /*    try {
                 JSONObject jsonObject = new JSONObject(s);
                 logradouro = "Logradouro: " + jsonObject.getString("logradouro");
                 cep = "Cep: " + jsonObject.getString("cep");
@@ -149,8 +199,31 @@ public class MainActivity extends AppCompatActivity {
             textComplemento.setText(complemento);
             textBairro.setText(bairro);
             textLocalidade.setText(localidade);
-            textUF.setText(uf);
+            textUF.setText(uf);*/
+
+
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                objetoValor = jsonObject.getString("BRL");
+
+                JSONObject jsonObjectReal = new JSONObject(objetoValor);
+                valorMoeda = jsonObjectReal.getDouble("last");
+                simbolo = jsonObjectReal.getString("symbol");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            textoresultado.setVisibility(View.VISIBLE);
+            textoresultado.setText(simbolo +" "+valorMoeda);
+            //textoresultado.setText(objetoValor);
+
+
         }
+
+
+
     }
 
 }
